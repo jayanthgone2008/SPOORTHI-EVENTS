@@ -1,0 +1,99 @@
+{
+  "name": "SubEvent",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Parent event ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "Sub-event title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Sub-event description"
+    },
+    "rules": {
+      "type": "string",
+      "description": "Rules for the sub-event"
+    },
+    "eligibility": {
+      "type": "string",
+      "description": "Eligibility criteria"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "time": {
+      "type": "string"
+    },
+    "venue": {
+      "type": "string"
+    },
+    "max_participants": {
+      "type": "number"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technical",
+        "cultural",
+        "sports",
+        "workshop",
+        "seminar",
+        "other"
+      ]
+    }
+  },
+  "required": [
+    "event_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    }
+  }
+}

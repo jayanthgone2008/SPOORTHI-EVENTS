@@ -1,0 +1,159 @@
+{
+  "name": "Registration",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Event ID"
+    },
+    "sub_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Selected sub-event IDs"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "roll_number": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string",
+      "enum": [
+        "CSE",
+        "ECE",
+        "EEE",
+        "ME",
+        "CE",
+        "IT",
+        "AIDS",
+        "AIML",
+        "CSM",
+        "CSD",
+        "Other"
+      ]
+    },
+    "year": {
+      "type": "string",
+      "enum": [
+        "1st Year",
+        "2nd Year",
+        "3rd Year",
+        "4th Year"
+      ]
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "registration_id": {
+      "type": "string",
+      "description": "Unique registration ID"
+    },
+    "qr_code_data": {
+      "type": "string",
+      "description": "QR code data string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "registered",
+        "attended",
+        "absent",
+        "cancelled"
+      ],
+      "default": "registered"
+    },
+    "attendance_marked": {
+      "type": "boolean",
+      "default": false
+    },
+    "certificate_url": {
+      "type": "string"
+    },
+    "is_winner": {
+      "type": "boolean",
+      "default": false
+    },
+    "winner_position": {
+      "type": "string",
+      "enum": [
+        "1st",
+        "2nd",
+        "3rd",
+        "special"
+      ]
+    }
+  },
+  "required": [
+    "event_id",
+    "full_name",
+    "roll_number",
+    "branch",
+    "year",
+    "mobile",
+    "email"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "volunteer"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "volunteer"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Event title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event description"
+    },
+    "banner_url": {
+      "type": "string",
+      "description": "Banner image URL"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Event date"
+    },
+    "time": {
+      "type": "string",
+      "description": "Event time"
+    },
+    "venue": {
+      "type": "string",
+      "description": "Event venue"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technical",
+        "cultural",
+        "sports",
+        "workshop",
+        "seminar",
+        "other"
+      ],
+      "description": "Event category"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "ongoing",
+        "completed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    },
+    "max_participants": {
+      "type": "number",
+      "description": "Maximum participants allowed"
+    },
+    "registration_open": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "eligible_years": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "1st Year",
+          "2nd Year",
+          "3rd Year",
+          "4th Year"
+        ]
+      },
+      "description": "Eligible years (empty = all years allowed)"
+    },
+    "eligible_branches": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CSE",
+          "ECE",
+          "EEE",
+          "ME",
+          "CE",
+          "IT",
+          "AIDS",
+          "AIML",
+          "CSM",
+          "CSD",
+          "Other"
+        ]
+      },
+      "description": "Eligible branches (empty = all branches allowed)"
+    }
+  },
+  "required": [
+    "title",
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "event_admin"
+          }
+        }
+      ]
+    }
+  }
+}
