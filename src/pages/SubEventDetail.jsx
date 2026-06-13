@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Clock, ArrowLeft, ArrowRight, BookOpen, Shield, Users } from 'lucide-react';
@@ -14,8 +14,11 @@ export default function SubEventDetail() {
 
   const { data: subEvent, isLoading } = useQuery({
     queryKey: ['subevent', subEventId],
-    queryFn: () => base44.entities.SubEvent.filter({ id: subEventId }),
-    select: (data) => data?.[0],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('SubEvent').select('*').eq('id', subEventId);
+      if (error) throw error;
+      return data?.[0];
+    },
     enabled: !!subEventId,
   });
 

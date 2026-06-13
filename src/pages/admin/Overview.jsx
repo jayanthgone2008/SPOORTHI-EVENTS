@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { Calendar, Users, CheckCircle2, Trophy } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -9,13 +9,21 @@ const COLORS = ['hsl(258,65%,55%)', 'hsl(35,95%,55%)', 'hsl(170,60%,45%)', 'hsl(
 export default function Overview() {
   const { data: events = [] } = useQuery({
     queryKey: ['admin-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
   const { data: registrations = [] } = useQuery({
     queryKey: ['admin-registrations'],
-    queryFn: () => base44.entities.Registration.list('-created_date', 500),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Registration').select('*').order('created_date', { ascending: false }).limit(500);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 

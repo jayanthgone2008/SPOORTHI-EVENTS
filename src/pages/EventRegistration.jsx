@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, AlertCircle, ShieldX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,20 +29,28 @@ export default function EventRegistration() {
 
   // Pre-fill email from logged-in user
   useEffect(() => {
-    base44.auth.me().then(user => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
       if (user?.email) setForm(prev => ({ ...prev, email: user.email }));
     }).catch(() => {});
   }, []);
 
   const { data: events = [] } = useQuery({
     queryKey: ['events-reg'],
-    queryFn: () => base44.entities.Event.filter({ registration_open: true }),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').eq('registration_open', true);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
   const { data: subEvents = [] } = useQuery({
     queryKey: ['subevents-reg', form.event_id],
-    queryFn: () => base44.entities.SubEvent.filter({ event_id: form.event_id }),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('SubEvent').select('*').eq('event_id', form.event_id);
+      if (error) throw error;
+      return data || [];
+    },
     enabled: !!form.event_id,
     initialData: [],
   });
@@ -56,7 +64,9 @@ export default function EventRegistration() {
         qr_code_data: JSON.stringify({ reg_id: regId, name: data.full_name, roll: data.roll_number, event: data.event_id }),
         status: 'registered',
       };
-      return base44.entities.Registration.create(regData);
+      const { data: result, error } = await supabase.from('Registration').insert([regData]).select();
+      if (error) throw error;
+      return result?.[0];
     },
     onSuccess: (data) => setResult(data),
     onError: (err) => console.error('Registration error:', err),

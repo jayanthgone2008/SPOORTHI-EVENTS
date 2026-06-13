@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { Search, QrCode, CheckCircle2, XCircle, Users, Sparkles, LogOut, Filter } from 'lucide-react';
 import QRCameraScanner from '@/components/volunteer/QRCameraScanner';
@@ -25,19 +25,29 @@ export default function VolunteerDashboard() {
 
   const { data: registrations = [] } = useQuery({
     queryKey: ['vol-registrations'],
-    queryFn: () => base44.entities.Registration.list('-created_date', 1000),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Registration').select('*').order('created_date', { ascending: false }).limit(1000);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['vol-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
   const markMutation = useMutation({
-    mutationFn: ({ id, status }) =>
-      base44.entities.Registration.update(id, { status, attendance_marked: status === 'attended' }),
+    mutationFn: async ({ id, status }) => {
+      const { error } = await supabase.from('Registration').update({ status, attendance_marked: status === 'attended' }).eq('id', id);
+      if (error) throw error;
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['vol-registrations'] });
       toast.success('Attendance updated');

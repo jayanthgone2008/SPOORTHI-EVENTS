@@ -1,14 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { supabase } from "@/api/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 
 export default function Login() {
-  const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
+  const handleGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/'
+      }
+    });
+    if (error) console.error('Login error:', error);
   };
 
   return (

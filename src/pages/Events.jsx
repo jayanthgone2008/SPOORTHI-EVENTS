@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Search, Filter, LayoutGrid, CalendarDays } from 'lucide-react';
@@ -29,7 +29,11 @@ export default function Events() {
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 50),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(50);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import Navbar from '@/components/landing/Navbar';
 import HeroSection from '@/components/landing/HeroSection';
 import UpcomingEvents from '@/components/landing/UpcomingEvents';
@@ -10,13 +10,21 @@ import Footer from '@/components/landing/Footer';
 export default function Home() {
   const { data: upcomingEvents = [] } = useQuery({
     queryKey: ['events', 'upcoming'],
-    queryFn: () => base44.entities.Event.filter({ status: 'upcoming' }, '-created_date', 6),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').eq('status', 'upcoming').order('created_date', { ascending: false }).limit(6);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
   const { data: ongoingEvents = [] } = useQuery({
     queryKey: ['events', 'ongoing'],
-    queryFn: () => base44.entities.Event.filter({ status: 'ongoing' }, '-created_date', 6),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').eq('status', 'ongoing').order('created_date', { ascending: false }).limit(6);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 

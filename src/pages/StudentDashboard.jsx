@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { Calendar, CheckCircle2, Trophy, Award, Sparkles, LogOut, ArrowRight } from 'lucide-react';
 import StudentQRCode from '@/components/StudentQRCode';
@@ -21,15 +21,23 @@ export default function StudentDashboard() {
   const { user, logout } = useAuth();
 
   const { data: myRegistrations = [], isLoading } = useQuery({
-    queryKey: ['my-registrations', user.id],
-    queryFn: () => base44.entities.Registration.filter({ created_by_id: user.id }, '-created_date', 50),
+    queryKey: ['my-registrations', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Registration').select('*').eq('created_by_id', user.id).order('created_date', { ascending: false }).limit(50);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
     enabled: !!user?.id,
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['student-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 

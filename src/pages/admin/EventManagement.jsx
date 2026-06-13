@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { Plus, Pencil, Trash2, Calendar, Search, Upload, X } from 'lucide-react';
 import SubEventManager from '@/components/admin/SubEventManager';
@@ -38,8 +38,11 @@ function MultiCheckbox({ label, options, selected, onChange }) {
 }
 
 async function uploadBanner(file) {
-  const { file_url } = await base44.integrations.Core.UploadFile({ file });
-  return file_url;
+  const fileName = `${Date.now()}-${file.name}`;
+  const { data, error } = await supabase.storage.from('event-banners').upload(fileName, file);
+  if (error) throw error;
+  const { data: { publicUrl } } = supabase.storage.from('event-banners').getPublicUrl(data.path);
+  return publicUrl;
 }
 
 export default function EventManagement() {
@@ -61,15 +64,24 @@ export default function EventManagement() {
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['admin-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: async () => {
+      const { data, error } = await supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       const payload = { ...data, max_participants: data.max_participants ? Number(data.max_participants) : undefined };
-      if (editing) return base44.entities.Event.update(editing.id, payload);
-      return base44.entities.Event.create(payload);
+      if (editing) {
+        const { error } = await supabase.from('Event').update(payload).eq('id', editing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('Event').insert([payload]);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-events'] });
@@ -81,7 +93,10 @@ export default function EventManagement() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Event.delete(id),
+    mutationFn: async (id) => {
+      const { error } = await supabase.from('Event').delete().eq('id', id);
+      if (error) throw error;
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-events'] });
       toast.success('Event deleted');
