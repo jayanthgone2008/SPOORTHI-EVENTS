@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Search, CheckCircle2, XCircle, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,13 @@ export default function AttendanceManagement() {
 
   const { data: registrations = [] } = useQuery({
     queryKey: ['admin-registrations'],
-    queryFn: () => base44.entities.Registration.list('-created_date', 500),
+    queryFn: () => supabase.from('Registration').select('*').order('created_date', { ascending: false }).limit(500),
     initialData: [],
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['admin-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: () => supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100),
     initialData: [],
   });
 
@@ -29,7 +29,7 @@ export default function AttendanceManagement() {
   events.forEach(e => { eventMap[e.id] = e; });
 
   const markMutation = useMutation({
-    mutationFn: ({ id, status }) => base44.entities.Registration.update(id, { status, attendance_marked: status === 'attended' }),
+    mutationFn: ({ id, status }) => supabase.from('Registration').update({ status, attendance_marked: status === 'attended' }).eq('id', id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-registrations'] });
       toast.success('Attendance updated');

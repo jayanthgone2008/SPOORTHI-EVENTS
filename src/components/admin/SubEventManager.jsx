@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,13 +20,13 @@ export default function SubEventManager({ eventId }) {
 
   const { data: subEvents = [] } = useQuery({
     queryKey: ['sub-events', eventId],
-    queryFn: () => base44.entities.SubEvent.filter({ event_id: eventId }),
+    queryFn: () => supabase.from('SubEvent').select('*').eq('event_id', eventId),
     enabled: !!eventId,
     initialData: [],
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.SubEvent.create({
+    mutationFn: (data) => supabase.from('SubEvent').insert({
       ...data,
       event_id: eventId,
       max_participants: data.max_participants ? Number(data.max_participants) : undefined,
@@ -40,7 +40,7 @@ export default function SubEventManager({ eventId }) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.SubEvent.delete(id),
+    mutationFn: (id) => supabase.from('SubEvent').delete().eq('id', id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['sub-events', eventId] });
       toast.success('Sub-event deleted');

@@ -32,7 +32,7 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3">
         <div className="glass rounded-2xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-lg shadow-primary/5">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="https://media.base44.com/images/public/6a281f2e3f0a5b317e6b8359/b8a2b13a4_logo-displlay.png" alt="Spoorthi" className="w-9 h-9 rounded-xl object-cover shadow-md" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center font-bold text-white text-sm shadow-md">S</div>
             <span className="text-xl font-display font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Spoorthi
             </span>

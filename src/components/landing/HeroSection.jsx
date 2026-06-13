@@ -3,18 +3,18 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, Users, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 
 export default function HeroSection() {
-  const { data: events = [] } = useQuery({ queryKey: ['hero-events'], queryFn: () => base44.entities.Event.list('-created_date', 200), initialData: [] });
-  const { data: registrations = [] } = useQuery({ queryKey: ['hero-regs'], queryFn: () => base44.entities.Registration.list('-created_date', 1000), initialData: [] });
+  const { data: events = [] } = useQuery({ queryKey: ['hero-events'], queryFn: () => supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(200), initialData: [] });
+  const { data: registrations = [] } = useQuery({ queryKey: ['hero-regs'], queryFn: () => supabase.from('Registration').select('*').order('created_date', { ascending: false }).limit(1000), initialData: [] });
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Concert background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('https://media.base44.com/images/public/6a281f2e3f0a5b317e6b8359/745eb234d_generated_image.png')" }} />
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1600&h=900&fit=crop')" }} />
       
       {/* Overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />

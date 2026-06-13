@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { Users, Search, UserCog, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,12 +23,12 @@ export default function UserManagement() {
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['admin-users'],
-    queryFn: () => base44.entities.User.list('-created_date', 200),
+    queryFn: () => supabase.from('User').select('*').order('created_date', { ascending: false }).limit(200),
     initialData: [],
   });
 
   const updateRoleMutation = useMutation({
-    mutationFn: ({ id, role }) => base44.entities.User.update(id, { role }),
+    mutationFn: ({ id, role }) => supabase.from('User').update({ role }).eq('id', id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('Role updated');

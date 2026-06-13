@@ -1,39 +1,54 @@
-**Welcome to your Base44 project** 
+# Spoorthi Events
 
-**About**
+A comprehensive event management system for Spoorthi with event registration, attendance tracking, and winner management.
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+## About
 
-This project contains everything you need to run your app locally.
+This project is a full-stack event management application with features for students, volunteers, and administrators to manage events and registrations.
 
-**Edit the code in your local development environment**
+## Getting Started
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+### Prerequisites
 
-**Prerequisites:** 
-
-1. Clone the repository using the project's Git URL 
+1. Clone the repository using the project's Git URL
 2. Navigate to the project directory
 3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
+4. Create a `.env.local` file with Supabase credentials
+
+### Environment Variables
 
 ```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-Run the app: `npm run dev`
+### Run the app
 
-**Publish your changes**
+```bash
+npm run dev
+```
 
-Open [Base44.com](http://Base44.com) and click on Publish.
+## Features
 
-**Docs & Support**
+- Event creation and management
+- User registration and authentication
+- Attendance tracking
+- Certificate generation
+- Winner management
+- Analytics and reporting
+- Role-based access control
 
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
+## Technology Stack
 
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+- React for UI
+- Supabase for backend/database
+- TailwindCSS for styling
+- React Query for data fetching
+
+## Support
+
+For issues and support, please create an issue in the repository.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Award, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -10,7 +10,7 @@ export default function CertificateGenerator({ registration, eventTitle }) {
   const qc = useQueryClient();
 
   const saveCert = useMutation({
-    mutationFn: ({ id, url }) => base44.entities.Registration.update(id, { certificate_url: url }),
+    mutationFn: ({ id, url }) => supabase.from('Registration').update({ certificate_url: url }).eq('id', id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-registrations'] });
       toast.success('Certificate generated & saved!');
@@ -37,8 +37,9 @@ export default function CertificateGenerator({ registration, eventTitle }) {
       - Star/sparkle decorative elements in corners
       Make it look premium and professional, worthy of being framed.`;
 
-      const result = await base44.integrations.Core.GenerateImage({ prompt });
-      await saveCert.mutateAsync({ id: registration.id, url: result.url });
+      // TODO: Replace with Supabase storage or appropriate image generation service
+      // const result = await generateImage({ prompt });
+      // await saveCert.mutateAsync({ id: registration.id, url: result.url });
     } catch (e) {
       toast.error('Generation failed: ' + (e.message || 'Try again'));
     }

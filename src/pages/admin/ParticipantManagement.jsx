@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { motion } from 'framer-motion';
 import { Search, Download, Users, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,13 +15,13 @@ export default function ParticipantManagement() {
 
   const { data: registrations = [] } = useQuery({
     queryKey: ['admin-registrations'],
-    queryFn: () => base44.entities.Registration.list('-created_date', 500),
+    queryFn: () => supabase.from('Registration').select('*').order('created_date', { ascending: false }).limit(500),
     initialData: [],
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['admin-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: () => supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100),
     initialData: [],
   });
 

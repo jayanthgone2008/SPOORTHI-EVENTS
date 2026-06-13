@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { Search, Trophy, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,13 @@ export default function WinnerManagement() {
 
   const { data: registrations = [] } = useQuery({
     queryKey: ['admin-registrations'],
-    queryFn: () => base44.entities.Registration.list('-created_date', 500),
+    queryFn: () => supabase.from('Registration').select('*').order('created_date', { ascending: false }).limit(500),
     initialData: [],
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['admin-events'],
-    queryFn: () => base44.entities.Event.list('-created_date', 100),
+    queryFn: () => supabase.from('Event').select('*').order('created_date', { ascending: false }).limit(100),
     initialData: [],
   });
 
@@ -29,10 +29,10 @@ export default function WinnerManagement() {
   events.forEach(e => { eventMap[e.id] = e; });
 
   const winnerMutation = useMutation({
-    mutationFn: ({ id, position }) => base44.entities.Registration.update(id, {
+    mutationFn: ({ id, position }) => supabase.from('Registration').update({
       is_winner: !!position,
       winner_position: position || null,
-    }),
+    }).eq('id', id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-registrations'] });
       toast.success('Winner updated');
